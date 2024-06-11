@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #output {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Access Point Tracker</h1>
+    <div id="output">
+        <p id="status">Checking...</p>
+        <p id="ap-info"></p>
+    </div>
+    <script>
+        async function fetchAPInfo() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/get_ap_info');  // Make sure this URL is correct
+                const data = await response.json();
+                
+                const status = document.getElementById('status');
+                const apInfo = document.getElementById('ap-info');
+                
+                if (data.status === 'success') {
+                    status.innerText = 'You have moved to:';
+                    apInfo.innerHTML = `MAC address: ${data.mac_address}<br>AP name: ${data.ap_name}`;
+                } else if (data.status === 'unknown') {
+                    status.innerText = 'You have moved to an unknown area:';
+                    apInfo.innerHTML = `MAC address: ${data.mac_address}`;
+                } else {
+                    status.innerText = 'Error:';
+                    apInfo.innerHTML = `Message: ${data.message}`;
+                }
+            } catch (error) {
+                console.error('Error fetching AP info:', error);
+            }
+        }
+        
+        setInterval(fetchAPInfo, 1000);
+    </script>
+</body>
+</html>
